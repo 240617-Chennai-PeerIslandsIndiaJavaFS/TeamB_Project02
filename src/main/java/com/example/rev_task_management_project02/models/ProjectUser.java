@@ -19,7 +19,7 @@ public class ProjectUser {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private com.example.rev_task_management.models.User user;
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "project_id", nullable = false)

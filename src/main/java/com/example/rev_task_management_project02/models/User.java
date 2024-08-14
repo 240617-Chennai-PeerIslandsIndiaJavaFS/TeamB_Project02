@@ -22,7 +22,7 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "user_role", nullable = false)
-    private com.example.rev_task_management.models.Role userRole;
+    private Role userRole;
 
     @Column(name = "email", nullable = false, length = 100, unique = true)
     private String email;
@@ -38,7 +38,7 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 10)
-    private com.example.rev_task_management.models.Status status;
+    private Status status;
 
     @Column(name = "specilization", length = 100)
     private String specialization;
