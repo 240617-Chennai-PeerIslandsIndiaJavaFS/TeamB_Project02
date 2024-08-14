@@ -24,12 +24,12 @@ public class Team {
 
     @ManyToOne
     @JoinColumn(name = "manager_id")
-    private com.example.rev_task_management.models.User manager;
+    private User manager;
 
     @ManyToOne
     @JoinColumn(name = "project_id", nullable = false)
     private Project project;
 
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)
-    private List<com.example.rev_task_management.models.TeamMember> teamMembers;
+    private List<TeamMember> teamMembers;
 }

@@ -41,7 +41,7 @@ public class Task {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private com.example.rev_task_management.models.User user;
+    private User user;
 
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;

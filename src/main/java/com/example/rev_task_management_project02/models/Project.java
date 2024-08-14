@@ -40,7 +40,7 @@ public class Project {
 
     @ManyToOne
     @JoinColumn(name = "manager_id")
-    private com.example.rev_task_management.models.User manager;
+    private User manager;
 
     @Column(name = "created_at", updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
