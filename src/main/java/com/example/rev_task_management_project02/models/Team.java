@@ -1,0 +1,35 @@
+package com.example.rev_task_management.models;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name = "teams")
+public class Team {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "team_id")
+    private long teamId;
+
+    @Column(name = "team_name", nullable = false, length = 100)
+    private String teamName;
+
+    @ManyToOne
+    @JoinColumn(name = "manager_id")
+    private User manager;
+
+    @ManyToOne
+    @JoinColumn(name = "project_id", nullable = false)
+    private Project project;
+
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)
+    private List<TeamMember> teamMembers;
+}
