@@ -1,4 +1,4 @@
-package com.example.rev_task_management.models;
+package com.example.rev_task_management_project02.models;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -23,5 +23,5 @@ public class TeamMember {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private com.example.rev_task_management.models.User user;
 }
