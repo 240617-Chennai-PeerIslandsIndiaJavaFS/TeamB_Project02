@@ -1,4 +1,4 @@
-package com.example.rev_task_management.models;
+package com.example.rev_task_management_project02.models;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -40,7 +40,7 @@ public class Project {
 
     @ManyToOne
     @JoinColumn(name = "manager_id")
-    private User manager;
+    private com.example.rev_task_management.models.User manager;
 
     @Column(name = "created_at", updatable = false)
     @Temporal(TemporalType.TIMESTAMP)

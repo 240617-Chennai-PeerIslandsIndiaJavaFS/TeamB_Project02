@@ -1,4 +1,4 @@
-package com.example.rev_task_management.models;
+package com.example.rev_task_management_project02.models;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -22,7 +22,7 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "user_role", nullable = false)
-    private Role userRole;
+    private com.example.rev_task_management.models.Role userRole;
 
     @Column(name = "email", nullable = false, length = 100, unique = true)
     private String email;
@@ -38,7 +38,7 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 10)
-    private Status status;
+    private com.example.rev_task_management.models.Status status;
 
     @Column(name = "specilization", length = 100)
     private String specialization;

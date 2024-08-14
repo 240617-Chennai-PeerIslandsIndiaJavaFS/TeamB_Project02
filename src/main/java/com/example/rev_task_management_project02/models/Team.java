@@ -1,4 +1,4 @@
-package com.example.rev_task_management.models;
+package com.example.rev_task_management_project02.models;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -24,12 +24,12 @@ public class Team {
 
     @ManyToOne
     @JoinColumn(name = "manager_id")
-    private User manager;
+    private com.example.rev_task_management.models.User manager;
 
     @ManyToOne
     @JoinColumn(name = "project_id", nullable = false)
     private Project project;
 
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)
-    private List<TeamMember> teamMembers;
+    private List<com.example.rev_task_management.models.TeamMember> teamMembers;
 }
