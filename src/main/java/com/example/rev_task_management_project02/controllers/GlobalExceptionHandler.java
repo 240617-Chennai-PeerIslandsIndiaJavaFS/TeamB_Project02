@@ -2,6 +2,7 @@ package com.example.rev_task_management_project02.controllers;
 
 
 import com.example.rev_task_management_project02.exceptions.LoginFailedException;
+import com.example.rev_task_management_project02.exceptions.ProjectNotFoundException;
 import com.example.rev_task_management_project02.exceptions.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,10 @@ public class GlobalExceptionHandler {
     }
     @ExceptionHandler(LoginFailedException.class)
     public ResponseEntity<String> handleLoginFailedException(LoginFailedException ex){
+        return new ResponseEntity<>(ex.getMessage(),HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(ProjectNotFoundException.class)
+    public ResponseEntity<String> handleProjectNotFoundException(ProjectNotFoundException ex){
         return new ResponseEntity<>(ex.getMessage(),HttpStatus.BAD_REQUEST);
     }
 
