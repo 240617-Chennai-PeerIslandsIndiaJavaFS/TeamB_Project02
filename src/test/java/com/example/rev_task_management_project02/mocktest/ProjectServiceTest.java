@@ -2,9 +2,13 @@ package com.example.rev_task_management_project02.mocktest;
 
 
 import com.example.rev_task_management_project02.dao.ProjectRepository;
+import com.example.rev_task_management_project02.dao.TeamRepository;
 import com.example.rev_task_management_project02.exceptions.ProjectNotFoundException;
 import com.example.rev_task_management_project02.models.Project;
+import com.example.rev_task_management_project02.models.Team;
+import com.example.rev_task_management_project02.models.User;
 import com.example.rev_task_management_project02.services.ProjectService;
+import com.example.rev_task_management_project02.services.TeamService;
 import com.example.rev_task_management_project02.utilities.EntityUpdater;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,9 +28,16 @@ public class ProjectServiceTest {
 
     @Mock
     private ProjectRepository projectRepository;
+    @Mock
+    private TeamRepository teamRepository;
+
+    @Mock
+    private TeamService teamService;
+
 
     @Mock
     private EntityUpdater entityUpdater;
+
 
     @InjectMocks
     private ProjectService projectService;
@@ -61,13 +72,31 @@ public class ProjectServiceTest {
 
     @Test
     void testCreateProject_Success() {
-        when(projectRepository.save(any(Project.class))).thenReturn(newProject);
+        String teamName = "Development Team";
+        Project savedProject = new Project();
+        savedProject.setProjectId(1L);
+        savedProject.setProjectName("New Project");
 
-        Project result = projectService.createProject(newProject);
+        User mockManager = mock(User.class);
+        savedProject.setManager(mockManager);
 
-        assertEquals(newProject, result);
-        verify(projectRepository).save(newProject);
+        when(projectRepository.save(any(Project.class))).thenReturn(savedProject);
+
+        Team newTeam = new Team();
+        when(teamService.createTeam(any(Team.class))).thenReturn(newTeam);
+
+        Project result = projectService.createProject(savedProject, teamName);
+
+        assertEquals(savedProject, result);
+        verify(projectRepository).save(savedProject);
+        verify(teamService).createTeam(argThat(team ->
+                team.getTeamName().equals(teamName) &&
+                        team.getProject().equals(savedProject) &&
+                        team.getManager().equals(savedProject.getManager())
+        ));
     }
+
+
 
     @Test
     void testGetAllProjects() {

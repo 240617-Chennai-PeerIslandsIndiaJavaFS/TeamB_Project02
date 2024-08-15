@@ -4,6 +4,7 @@ package com.example.rev_task_management_project02.services;
 import com.example.rev_task_management_project02.dao.ProjectRepository;
 import com.example.rev_task_management_project02.exceptions.ProjectNotFoundException;
 import com.example.rev_task_management_project02.models.Project;
+import com.example.rev_task_management_project02.models.Team;
 import com.example.rev_task_management_project02.utilities.EntityUpdater;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,11 +16,13 @@ public class ProjectService {
 
     private final ProjectRepository projectRepository;
     private final EntityUpdater entityUpdater;
+    private final TeamService teamService;
 
     @Autowired
-    public ProjectService(ProjectRepository projectRepository, EntityUpdater entityUpdater) {
+    public ProjectService(ProjectRepository projectRepository, EntityUpdater entityUpdater, TeamService teamService) {
         this.projectRepository = projectRepository;
         this.entityUpdater = entityUpdater;
+        this.teamService=teamService;
     }
 
     public Project getProjectById(Long id) throws ProjectNotFoundException {
@@ -27,9 +30,18 @@ public class ProjectService {
                 new ProjectNotFoundException("Project with ID " + id + " not found"));
     }
 
-    public Project createProject(Project newProject) {
-        return projectRepository.save(newProject);
+    public Project createProject(Project project, String teamName) {
+        Project savedProject = projectRepository.save(project);
+        Team team = new Team();
+        team.setTeamName(teamName);
+        team.setManager(savedProject.getManager());
+        team.setProject(savedProject);
+
+        teamService.createTeam(team);
+
+        return savedProject;
     }
+
 
     public Project updateProject(Long id, Project updatedProject) throws ProjectNotFoundException {
         Project existingProject = projectRepository.findById(id).orElseThrow(() ->

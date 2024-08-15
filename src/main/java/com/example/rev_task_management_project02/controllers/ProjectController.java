@@ -22,11 +22,14 @@ public class ProjectController {
         this.projectService = projectService;
     }
 
+
     @PostMapping
-    public ResponseEntity<Project> createProject(@RequestBody Project project) {
-        Project createdProject = projectService.createProject(project);
+    public ResponseEntity<Project> createProject(@RequestBody Project project, @RequestParam String teamName) {
+        Project createdProject = projectService.createProject(project, teamName);
         return new ResponseEntity<>(createdProject, HttpStatus.CREATED);
     }
+
+
 
     @PutMapping("/{id}")
     public ResponseEntity<Project> updateProject(@PathVariable Long id, @RequestBody Project projectDetails) {

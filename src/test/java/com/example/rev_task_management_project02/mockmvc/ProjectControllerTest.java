@@ -47,11 +47,20 @@ public class ProjectControllerTest {
 
     @Test
     public void testCreateProject() throws Exception {
-        Mockito.when(projectService.createProject(any(Project.class))).thenReturn(project);
+        String teamName = "Development Team";
+
+        Project project = new Project();
+        project.setProjectId(1L);
+        project.setProjectName("New Project");
+        project.setDescription("This is a new project.");
 
         String projectJson = objectMapper.writeValueAsString(project);
 
+        Mockito.when(projectService.createProject(any(Project.class), any(String.class)))
+                .thenReturn(project);
+
         mockMvc.perform(MockMvcRequestBuilders.post("/api/projects")
+                        .param("teamName", teamName)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(projectJson))
                 .andExpect(status().isCreated())
