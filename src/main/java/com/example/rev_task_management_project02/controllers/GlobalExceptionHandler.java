@@ -44,5 +44,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleTimestampNotFoundException(TimestampNotFoundException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
+    @ExceptionHandler(TeamNotFoundException.class)
+    public ResponseEntity<String> handleTeamNotFoundException(TeamNotFoundException ex){
+        return  new ResponseEntity<>(ex.getMessage(),HttpStatus.BAD_REQUEST);
+    }
+
 
 }
