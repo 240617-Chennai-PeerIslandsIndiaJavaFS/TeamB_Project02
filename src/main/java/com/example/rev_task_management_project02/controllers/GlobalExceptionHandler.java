@@ -5,6 +5,7 @@ import com.example.rev_task_management_project02.exceptions.LoginFailedException
 import com.example.rev_task_management_project02.exceptions.ProjectNotFoundException;
 import com.example.rev_task_management_project02.exceptions.TaskNotFoundException;
 import com.example.rev_task_management_project02.exceptions.UserNotFoundException;
+import com.example.rev_task_management_project02.exceptions.MilestoneNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -35,5 +36,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleTaskNotFoundException(TaskNotFoundException ex){
         return new ResponseEntity<>(ex.getMessage(),HttpStatus.BAD_REQUEST);
     }
+    @ExceptionHandler(MilestoneNotFoundException.class)
+    public ResponseEntity<String> handleMilestoneException(MilestoneNotFoundException ex){
+        return new ResponseEntity<>(ex.getMessage(),HttpStatus.BAD_REQUEST);
+    }
+
 
 }
