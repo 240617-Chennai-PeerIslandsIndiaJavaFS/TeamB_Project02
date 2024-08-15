@@ -34,7 +34,7 @@ public class User {
     private String phone;
 
     @Column(name = "manager_id")
-    private Integer managerId; // Optional relationship
+    private long managerId;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 10)
