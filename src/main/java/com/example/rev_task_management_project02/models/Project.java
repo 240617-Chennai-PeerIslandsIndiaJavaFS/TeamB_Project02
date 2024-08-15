@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -49,4 +50,7 @@ public class Project {
     @Column(name = "updated_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Timestamp updatedAt;
+
+    @OneToMany(mappedBy = "project")
+    private List<Task> tasks;
 }

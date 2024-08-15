@@ -80,6 +80,9 @@ public class TaskService {
             throw new TaskNotFoundException("Task not found with ID " + id);
         }
     }
+    public List<Task> getTasksByProjectId(Long projectId) {
+        return taskRepository.findByProjectProjectId(projectId);
+    }
 
     public List<Task> getAllTasks() {
         return taskRepository.findAll();
