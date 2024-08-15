@@ -62,4 +62,9 @@ public class TaskController {
             return ResponseEntity.notFound().build();
         }
     }
+    @GetMapping("/project/{projectId}")
+    public ResponseEntity<List<Task>> getTasksByProjectId(@PathVariable Long projectId) {
+        List<Task> tasks = taskService.getTasksByProjectId(projectId);
+        return ResponseEntity.ok(tasks);
+    }
 }
