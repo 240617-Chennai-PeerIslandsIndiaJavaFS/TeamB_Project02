@@ -38,6 +38,7 @@ public class UserController {
     @GetMapping("/resetPassword")
     public ResponseEntity<?> resetPassword(
             @RequestParam String email,
+            @RequestParam String oldPassword,
             @RequestParam String newPassword,
             @RequestParam String confirmPassword) {
 
@@ -45,12 +46,21 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Passwords do not match");
         }
 
+        User user = userService.findByEmail(email);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+
+        if (!userService.checkPassword(user, oldPassword)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Old password is incorrect");
+        }
+
         User updatedUser = userService.resetPassword(email, newPassword);
 
         if (updatedUser != null) {
             return ResponseEntity.ok("Password reset successfully");
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to reset password");
         }
     }
 

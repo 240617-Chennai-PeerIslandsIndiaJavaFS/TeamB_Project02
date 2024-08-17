@@ -44,6 +44,14 @@ public class UserService {
         }
         return null;
     }
+
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    public boolean checkPassword(User user, String oldPassword) {
+        return oldPassword.equals(user.getPassword());
+    }
     public User createUser(User user){
         return userRepository.save(user);
     }
