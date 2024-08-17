@@ -10,6 +10,8 @@ import com.example.rev_task_management_project02.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class TeamMemberService {
 
@@ -53,5 +55,8 @@ public class TeamMemberService {
             user.setManagerId(0);
             userRepository.save(user);
         }
+    }
+    public List<TeamMember> getTeamMembersByTeamId(Long teamId) {
+        return teamMemberRepository.findByTeamId(teamId);
     }
 }
