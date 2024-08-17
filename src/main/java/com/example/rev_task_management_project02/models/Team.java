@@ -1,5 +1,6 @@
 package com.example.rev_task_management_project02.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -31,5 +32,6 @@ public class Team {
     private Project project;
 
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<TeamMember> teamMembers;
 }
