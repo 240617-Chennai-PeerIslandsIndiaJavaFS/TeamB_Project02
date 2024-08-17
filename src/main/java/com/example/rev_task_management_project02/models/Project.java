@@ -52,5 +52,6 @@ public class Project {
     private Timestamp updatedAt;
 
     @OneToMany(mappedBy = "project")
+    @JsonIgnore
     private List<Task> tasks;
 }
