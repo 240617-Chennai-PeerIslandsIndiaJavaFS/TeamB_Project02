@@ -21,15 +21,15 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final EntityUpdater entityUpdater;
     private final TimeStampService timeStampService;
-    private  final TimeStampRepository timeStampRepository;
+    private final TimeStampRepository timeStampRepository;
 
 
     @Autowired
-    public TaskService(TaskRepository taskRepository, EntityUpdater entityUpdater,TimeStampService timeStampService,TimeStampRepository timeStampRepository) {
+    public TaskService(TaskRepository taskRepository, EntityUpdater entityUpdater, TimeStampService timeStampService, TimeStampRepository timeStampRepository) {
         this.taskRepository = taskRepository;
         this.entityUpdater = entityUpdater;
-        this.timeStampService =  timeStampService;
-        this.timeStampRepository= timeStampRepository;
+        this.timeStampService = timeStampService;
+        this.timeStampRepository = timeStampRepository;
     }
 
     public Task getTaskById(Long id) throws TaskNotFoundException {
@@ -85,6 +85,7 @@ public class TaskService {
             throw new TaskNotFoundException("Task not found with ID " + id);
         }
     }
+
     public List<Task> getTasksByProjectId(Long projectId) {
         return taskRepository.findByProjectProjectId(projectId);
     }
@@ -92,8 +93,12 @@ public class TaskService {
     public List<Task> getAllTasks() {
         return taskRepository.findAll();
     }
+
     public List<TimeStamp> getTimeStampsForTask(long taskId) {
         return timeStampRepository.findByTaskTaskId(taskId);
     }
 
+    public List<Task> getTasksByUserId(Long userId) {
+        return taskRepository.findByUserUserId(userId);
+    }
 }

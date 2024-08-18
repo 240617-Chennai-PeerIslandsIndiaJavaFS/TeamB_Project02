@@ -63,14 +63,22 @@ public class TaskController {
             return ResponseEntity.notFound().build();
         }
     }
+
     @GetMapping("/project/{projectId}")
     public ResponseEntity<List<Task>> getTasksByProjectId(@PathVariable Long projectId) {
         List<Task> tasks = taskService.getTasksByProjectId(projectId);
         return ResponseEntity.ok(tasks);
     }
+
     @GetMapping("/{taskId}/timestamps")
     public ResponseEntity<List<TimeStamp>> getTaskTimestamps(@PathVariable("taskId") long taskId) {
         List<TimeStamp> timeStamps = taskService.getTimeStampsForTask(taskId);
         return ResponseEntity.ok(timeStamps);
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<Task>> getTasksByUserId(@PathVariable Long userId) {
+        List<Task> tasks = taskService.getTasksByUserId(userId);
+        return ResponseEntity.ok(tasks);
     }
 }
