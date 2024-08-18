@@ -23,11 +23,11 @@ public class Team {
     @Column(name = "team_name", nullable = false, length = 100)
     private String teamName;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "manager_id")
     private User manager;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "project_id", nullable = false)
     private Project project;
 

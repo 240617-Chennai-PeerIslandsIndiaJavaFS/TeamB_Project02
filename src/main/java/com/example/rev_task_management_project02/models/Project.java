@@ -22,7 +22,7 @@ public class Project {
     @Column(name = "project_id")
     private long projectId;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "client_id", nullable = false)
     private Client client;
 
@@ -41,7 +41,7 @@ public class Project {
     @Column(name = "percentage_left", nullable = false)
     private float percentageLeft;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "manager_id")
     private User manager;
 

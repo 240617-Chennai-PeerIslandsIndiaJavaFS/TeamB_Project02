@@ -17,11 +17,11 @@ public class TeamMember {
     @Column(name = "team_member_id")
     private long teamMemberId;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "team_id", nullable = false)
     private Team team;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private User user;
 }
