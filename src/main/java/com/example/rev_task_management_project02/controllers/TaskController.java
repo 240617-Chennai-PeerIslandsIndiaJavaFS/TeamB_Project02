@@ -3,6 +3,7 @@ package com.example.rev_task_management_project02.controllers;
 
 import com.example.rev_task_management_project02.exceptions.TaskNotFoundException;
 import com.example.rev_task_management_project02.models.Task;
+import com.example.rev_task_management_project02.models.TimeStamp;
 import com.example.rev_task_management_project02.services.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -66,5 +67,10 @@ public class TaskController {
     public ResponseEntity<List<Task>> getTasksByProjectId(@PathVariable Long projectId) {
         List<Task> tasks = taskService.getTasksByProjectId(projectId);
         return ResponseEntity.ok(tasks);
+    }
+    @GetMapping("/{taskId}/timestamps")
+    public ResponseEntity<List<TimeStamp>> getTaskTimestamps(@PathVariable("taskId") long taskId) {
+        List<TimeStamp> timeStamps = taskService.getTimeStampsForTask(taskId);
+        return ResponseEntity.ok(timeStamps);
     }
 }

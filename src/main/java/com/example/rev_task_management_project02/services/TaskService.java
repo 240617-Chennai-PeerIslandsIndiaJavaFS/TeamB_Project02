@@ -1,12 +1,16 @@
 package com.example.rev_task_management_project02.services;
 
 import com.example.rev_task_management_project02.dao.TaskRepository;
+import com.example.rev_task_management_project02.dao.TimeStampRepository;
 import com.example.rev_task_management_project02.exceptions.TaskNotFoundException;
 import com.example.rev_task_management_project02.models.Task;
 import com.example.rev_task_management_project02.models.TimeStamp;
 import com.example.rev_task_management_project02.utilities.EntityUpdater;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -17,14 +21,15 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final EntityUpdater entityUpdater;
     private final TimeStampService timeStampService;
-
+    private  final TimeStampRepository timeStampRepository;
 
 
     @Autowired
-    public TaskService(TaskRepository taskRepository, EntityUpdater entityUpdater,TimeStampService timeStampService) {
+    public TaskService(TaskRepository taskRepository, EntityUpdater entityUpdater,TimeStampService timeStampService,TimeStampRepository timeStampRepository) {
         this.taskRepository = taskRepository;
         this.entityUpdater = entityUpdater;
         this.timeStampService =  timeStampService;
+        this.timeStampRepository= timeStampRepository;
     }
 
     public Task getTaskById(Long id) throws TaskNotFoundException {
@@ -87,4 +92,8 @@ public class TaskService {
     public List<Task> getAllTasks() {
         return taskRepository.findAll();
     }
+    public List<TimeStamp> getTimeStampsForTask(long taskId) {
+        return timeStampRepository.findByTaskTaskId(taskId);
+    }
+
 }
