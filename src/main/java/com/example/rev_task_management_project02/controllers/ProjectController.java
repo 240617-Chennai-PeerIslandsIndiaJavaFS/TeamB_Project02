@@ -67,4 +67,8 @@ public class ProjectController {
         List<Project> projects = projectService.getAllProjects();
         return ResponseEntity.ok(projects);
     }
+    @GetMapping("/by-manager/{managerId}")
+    public List<Project> getProjectsByManagerId(@PathVariable Long managerId) {
+        return projectService.getProjectsByManagerId(managerId);
+    }
 }

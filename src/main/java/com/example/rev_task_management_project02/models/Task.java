@@ -19,7 +19,7 @@ public class Task {
     @Column(name = "task_id")
     private long taskId;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "project_id", nullable = false)
     private Project project;
 

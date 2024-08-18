@@ -67,4 +67,7 @@ public class ProjectService {
     public List<Project> getAllProjects() {
         return projectRepository.findAll();
     }
+    public List<Project> getProjectsByManagerId(Long managerId) {
+        return projectRepository.findByManager_UserId(managerId);
+    }
 }
