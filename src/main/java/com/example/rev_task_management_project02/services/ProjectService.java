@@ -2,8 +2,10 @@ package com.example.rev_task_management_project02.services;
 
 
 import com.example.rev_task_management_project02.dao.ProjectRepository;
+import com.example.rev_task_management_project02.dao.TaskRepository;
 import com.example.rev_task_management_project02.exceptions.ProjectNotFoundException;
 import com.example.rev_task_management_project02.models.Project;
+import com.example.rev_task_management_project02.models.Task;
 import com.example.rev_task_management_project02.models.Team;
 import com.example.rev_task_management_project02.utilities.EntityUpdater;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,12 +19,15 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final EntityUpdater entityUpdater;
     private final TeamService teamService;
+    private TaskRepository taskRepository;
+
 
     @Autowired
-    public ProjectService(ProjectRepository projectRepository, EntityUpdater entityUpdater, TeamService teamService) {
+    public ProjectService(ProjectRepository projectRepository, EntityUpdater entityUpdater, TeamService teamService,TaskRepository taskRepository) {
         this.projectRepository = projectRepository;
         this.entityUpdater = entityUpdater;
         this.teamService=teamService;
+        this.taskRepository =  taskRepository;
     }
 
     public Project getProjectById(Long id) throws ProjectNotFoundException {
@@ -53,13 +58,17 @@ public class ProjectService {
     }
 
     public Project deleteProjectById(Long id) throws ProjectNotFoundException {
-        if (projectRepository.existsById(id)) {
-            Project project = projectRepository.findById(id).get();
-            projectRepository.deleteById(id);
-            return project;
-        } else {
-            throw new ProjectNotFoundException("Project not found with id " + id);
+        Project project = projectRepository.findById(id).orElseThrow(() ->
+                new ProjectNotFoundException("Project not found with ID " + id));
+
+        List<Task> tasks = taskRepository.findByProjectProjectId(id);
+        for (Task task : tasks) {
+            taskRepository.delete(task);
         }
+
+        projectRepository.deleteById(id);
+
+        return project;
     }
 
 

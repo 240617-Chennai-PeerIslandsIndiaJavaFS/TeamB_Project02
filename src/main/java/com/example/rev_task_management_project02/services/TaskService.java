@@ -77,13 +77,17 @@ public class TaskService {
     }
 
     public Task deleteTaskById(Long id) throws TaskNotFoundException {
-        if (taskRepository.existsById(id)) {
-            Task task = taskRepository.findById(id).get();
-            taskRepository.deleteById(id);
-            return task;
-        } else {
-            throw new TaskNotFoundException("Task not found with ID " + id);
+        Task task = taskRepository.findById(id).orElseThrow(() ->
+                new TaskNotFoundException("Task not found with ID " + id));
+
+        List<TimeStamp> timeStamps = timeStampRepository.findByTaskTaskId(id);
+        for (TimeStamp timeStamp : timeStamps) {
+            timeStampRepository.delete(timeStamp);
         }
+
+        taskRepository.deleteById(id);
+
+        return task;
     }
 
     public List<Task> getTasksByProjectId(Long projectId) {

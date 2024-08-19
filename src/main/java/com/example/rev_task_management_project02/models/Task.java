@@ -1,11 +1,13 @@
 package com.example.rev_task_management_project02.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -19,7 +21,7 @@ public class Task {
     @Column(name = "task_id")
     private long taskId;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "project_id", nullable = false)
     private Project project;
 
@@ -53,4 +55,7 @@ public class Task {
     @Column(name = "updated_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Timestamp updatedAt;
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<TimeStamp> timeStamps;
 }

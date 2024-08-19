@@ -41,7 +41,7 @@ public class Project {
     @Column(name = "percentage_left", nullable = false)
     private float percentageLeft;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "manager_id")
     private User manager;
 
@@ -53,7 +53,7 @@ public class Project {
     @Temporal(TemporalType.TIMESTAMP)
     private Timestamp updatedAt;
 
-    @OneToMany(mappedBy = "project")
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Task> tasks;
 }
