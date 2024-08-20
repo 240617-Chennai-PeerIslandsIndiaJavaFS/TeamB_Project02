@@ -1,25 +1,30 @@
 package com.example.rev_task_management_project02.controllers;
 
-
 import com.example.rev_task_management_project02.exceptions.TaskNotFoundException;
+import com.example.rev_task_management_project02.exceptions.MilestoneNotFoundException;
+import com.example.rev_task_management_project02.models.Milestone;
 import com.example.rev_task_management_project02.models.Task;
 import com.example.rev_task_management_project02.models.TimeStamp;
 import com.example.rev_task_management_project02.services.TaskService;
+import com.example.rev_task_management_project02.services.MilestoneService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/tasks")
 public class TaskController {
 
     private final TaskService taskService;
+    private final MilestoneService milestoneService;
 
     @Autowired
-    public TaskController(TaskService taskService) {
+    public TaskController(TaskService taskService, MilestoneService milestoneService) {
         this.taskService = taskService;
+        this.milestoneService = milestoneService;
     }
 
     @GetMapping("/{id}")
@@ -45,11 +50,17 @@ public class TaskController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Task> updateTask(@PathVariable Long id, @RequestBody Task updatedTask) {
+    public ResponseEntity<Task> updateTask(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
         try {
-            Task task = taskService.updateTask(id, updatedTask);
-            return ResponseEntity.ok(task);
-        } catch (TaskNotFoundException e) {
+            Task task = taskService.getTaskById(id);
+            if (updates.containsKey("milestoneId")) {
+                Long milestoneId = ((Number) updates.get("milestoneId")).longValue();
+                Milestone milestone = milestoneService.getMilestoneById(milestoneId);
+                task.setMilestone(milestone);
+            }
+            Task updatedTask = taskService.updateTask(id, task);
+            return ResponseEntity.ok(updatedTask);
+        } catch (TaskNotFoundException | MilestoneNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
     }

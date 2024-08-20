@@ -59,17 +59,16 @@ public class TaskService {
         Task existingTask = taskRepository.findById(id).orElseThrow(() ->
                 new TaskNotFoundException("Task with ID " + id + " not found"));
 
-        Task updatedTaskEntity = entityUpdater.updateFields(existingTask, updatedTask);
-        updatedTaskEntity.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
+        existingTask.setMilestone(updatedTask.getMilestone());
 
-        Task savedTask = taskRepository.save(updatedTaskEntity);
+        existingTask.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
+        Task savedTask = taskRepository.save(existingTask);
 
         if (savedTask.getMilestone() != null) {
             TimeStamp timeStamp = new TimeStamp();
             timeStamp.setTask(savedTask);
             timeStamp.setMilestone(savedTask.getMilestone());
             timeStamp.setTimeStamp(new Timestamp(System.currentTimeMillis()));
-
             timeStampService.createTimeStamp(timeStamp);
         }
 
