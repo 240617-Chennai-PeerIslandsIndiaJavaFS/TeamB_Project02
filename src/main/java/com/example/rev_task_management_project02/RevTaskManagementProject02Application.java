@@ -4,7 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class RevTaskManagementProject02Application {
+public class ""RevTaskManagementProject02Application {
 
 	public static void main(String[] args) {
 		SpringApplication.run(RevTaskManagementProject02Application.class, args);

@@ -37,6 +37,7 @@ public class MilestoneService {
     public Milestone updateMilestone(Long id, Milestone milestoneDetails) throws MilestoneNotFoundException {
         Milestone existingMilestone = milestoneRepository.findById(id)
                 .orElseThrow(() -> new MilestoneNotFoundException("Milestone with Id " + id + " not found"));
+
         Milestone updatedMilestone = entityUpdater.updateFields(existingMilestone, milestoneDetails);
         return milestoneRepository.save(updatedMilestone);
     }
