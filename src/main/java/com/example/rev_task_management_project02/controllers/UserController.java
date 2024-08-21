@@ -19,6 +19,7 @@ import java.util.Map;
 @RequestMapping("/api")
 public class UserController {
 
+    @Autowired
     private final UserService userService;
 
     @Autowired
@@ -70,7 +71,7 @@ public class UserController {
         return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }
 
-    @PutMapping("/admin/updateUser/{id}")
+  @PutMapping("/admin/updateUser/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User newDetails) {
         try {
             User updatedUser = userService.updateUser(id, newDetails);
