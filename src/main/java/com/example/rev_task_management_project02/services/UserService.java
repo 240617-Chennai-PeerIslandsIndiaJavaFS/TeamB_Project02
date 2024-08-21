@@ -9,6 +9,7 @@ import com.example.rev_task_management_project02.models.Role;
 import com.example.rev_task_management_project02.models.Status;
 import com.example.rev_task_management_project02.models.User;
 import com.example.rev_task_management_project02.utilities.EntityUpdater;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,8 @@ import java.util.Optional;
 
 @Service
 public class UserService {
+    @Autowired
+    private MailService mailService;
 
     private final UserRepository userRepository;
     private final EntityUpdater entityUpdater;
@@ -52,9 +55,24 @@ public class UserService {
     public boolean checkPassword(User user, String oldPassword) {
         return oldPassword.equals(user.getPassword());
     }
-    public User createUser(User user){
-        return userRepository.save(user);
+//    public User createUser(User user){
+//        return userRepository.save(user);
+//    }
+public User createUser(User user) {
+    User createdUser = userRepository.save(user);
+
+    // Send email with the password
+    try {
+        String subject = "Your New Account Password";
+        String body = String.format("Dear %s,\n\nYour account has been created successfully. Your password is: %s\n\nBest regards,\nYour Team",
+                createdUser.getUserName(), user.getPassword());
+        mailService.sendEmail(user.getEmail(), subject, body);
+    } catch (MessagingException e) {
+        e.printStackTrace();  // Log or handle the exception as needed
     }
+
+    return createdUser;
+}
     public User updateUser(Long userId, User newDetails) throws UserNotFoundException {
         User existingUser = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
