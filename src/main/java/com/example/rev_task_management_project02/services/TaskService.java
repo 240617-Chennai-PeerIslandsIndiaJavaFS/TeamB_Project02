@@ -2,7 +2,9 @@ package com.example.rev_task_management_project02.services;
 
 import com.example.rev_task_management_project02.dao.TaskRepository;
 import com.example.rev_task_management_project02.dao.TimeStampRepository;
+import com.example.rev_task_management_project02.exceptions.MilestoneNotFoundException;
 import com.example.rev_task_management_project02.exceptions.TaskNotFoundException;
+import com.example.rev_task_management_project02.models.Milestone;
 import com.example.rev_task_management_project02.models.Task;
 import com.example.rev_task_management_project02.models.TimeStamp;
 import com.example.rev_task_management_project02.utilities.EntityUpdater;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class TaskService {
@@ -22,14 +25,16 @@ public class TaskService {
     private final EntityUpdater entityUpdater;
     private final TimeStampService timeStampService;
     private final TimeStampRepository timeStampRepository;
+    private final MilestoneService milestoneService;
 
 
     @Autowired
-    public TaskService(TaskRepository taskRepository, EntityUpdater entityUpdater, TimeStampService timeStampService, TimeStampRepository timeStampRepository) {
+    public TaskService(TaskRepository taskRepository, EntityUpdater entityUpdater, TimeStampService timeStampService, TimeStampRepository timeStampRepository,MilestoneService milestoneService) {
         this.taskRepository = taskRepository;
         this.entityUpdater = entityUpdater;
         this.timeStampService = timeStampService;
         this.timeStampRepository = timeStampRepository;
+        this.milestoneService = milestoneService;
     }
 
     public Task getTaskById(Long id) throws TaskNotFoundException {
