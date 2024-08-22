@@ -7,6 +7,7 @@ import com.example.rev_task_management_project02.exceptions.UserNotFoundExceptio
 import com.example.rev_task_management_project02.models.Role;
 import com.example.rev_task_management_project02.models.User;
 import com.example.rev_task_management_project02.services.UserService;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,32 +37,35 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
     }
 
-    @GetMapping("/resetPassword")
-    public ResponseEntity<?> resetPassword(
-            @RequestParam String email,
-            @RequestParam String oldPassword,
-            @RequestParam String newPassword,
-            @RequestParam String confirmPassword) {
+
+    @PostMapping("/requestPasswordReset")
+    public ResponseEntity<?> requestPasswordReset(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        try {
+            userService.sendPasswordResetToken(email);
+            return ResponseEntity.ok("Password reset token sent to email.");
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+        } catch (MessagingException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to send email.");
+        }
+    }
+
+    @PostMapping("/resetPassword")
+    public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> request) {
+        String token = request.get("token");
+        String newPassword = request.get("newPassword");
+        String confirmPassword = request.get("confirmPassword");
 
         if (!newPassword.equals(confirmPassword)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Passwords do not match");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Passwords do not match.");
         }
 
-        User user = userService.findByEmail(email);
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
-        }
-
-        if (!userService.checkPassword(user, oldPassword)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Old password is incorrect");
-        }
-
-        User updatedUser = userService.resetPassword(email, newPassword);
-
-        if (updatedUser != null) {
-            return ResponseEntity.ok("Password reset successfully");
-        } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to reset password");
+        try {
+            userService.resetPasswordWithToken(token, newPassword);
+            return ResponseEntity.ok("Password reset successfully.");
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invalid token.");
         }
     }
 
