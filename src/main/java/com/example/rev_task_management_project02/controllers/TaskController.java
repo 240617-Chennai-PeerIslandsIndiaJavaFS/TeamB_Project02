@@ -64,6 +64,15 @@ public class TaskController {
             return ResponseEntity.notFound().build();
         }
     }
+    @PutMapping("/manager/{id}")
+    public ResponseEntity<Task> updateTask(@PathVariable Long id, @RequestBody Task updatedTask) {
+        try {
+            Task task = taskService.updateTask(id, updatedTask);
+            return ResponseEntity.ok(task);
+        } catch (TaskNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
