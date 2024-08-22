@@ -1,7 +1,5 @@
 package com.example.rev_task_management_project02.services;
 
-
-
 import com.example.rev_task_management_project02.dao.UserRepository;
 import com.example.rev_task_management_project02.exceptions.LoginFailedException;
 import com.example.rev_task_management_project02.exceptions.UserNotFoundException;
@@ -13,8 +11,7 @@ import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class UserService {
@@ -23,6 +20,8 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final EntityUpdater entityUpdater;
+
+    private Map<String, String> tokenStore = new HashMap<>();
 
     @Autowired
     public UserService(UserRepository userRepository, EntityUpdater entityUpdater) {
@@ -39,32 +38,53 @@ public class UserService {
         return user;
     }
 
-    public User resetPassword(String email, String newPassword) {
+    public void sendPasswordResetToken(String email) throws UserNotFoundException, MessagingException {
         User user = userRepository.findByEmail(email);
-        if (user != null) {
-            user.setPassword(newPassword);
-            return userRepository.save(user);
+        if (user == null) {
+            throw new UserNotFoundException("User not found.");
         }
-        return null;
+
+        String token = UUID.randomUUID().toString();
+        tokenStore.put(token, email); // Store token with associated email
+
+        String subject = "Password Reset Request";
+        String body = String.format("Dear %s,\n\nTo reset your password, please use the following token: %s\n\nBest regards,\nTeam Synergize",
+                user.getUserName(), token);
+        mailService.sendEmail(user.getEmail(), subject, body);
     }
 
-    public User findByEmail(String email) {
+    public void resetPasswordWithToken(String token, String newPassword) throws UserNotFoundException {
+        String email = tokenStore.get(token);
+        if (email == null) {
+            throw new UserNotFoundException("Invalid token.");
+        }
+
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new UserNotFoundException("User not found.");
+        }
+
+        user.setPassword(newPassword);
+        userRepository.save(user);
+
+        tokenStore.remove(token); // Remove token after use
+    }
+
+
+public User findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 
     public boolean checkPassword(User user, String oldPassword) {
         return oldPassword.equals(user.getPassword());
     }
-//    public User createUser(User user){
-//        return userRepository.save(user);
-//    }
+
 public User createUser(User user) {
     User createdUser = userRepository.save(user);
 
-    // Send email with the password
     try {
         String subject = "Your New Account Password";
-        String body = String.format("Dear %s,\n\nYour account has been created successfully. Your password is: %s\n\nBest regards,\nYour Team",
+        String body = String.format("Dear %s,\n\nYour account has been created successfully. Your password is: %s\n\nBest regards,\nTeam Synergize",
                 createdUser.getUserName(), user.getPassword());
         mailService.sendEmail(user.getEmail(), subject, body);
     } catch (MessagingException e) {

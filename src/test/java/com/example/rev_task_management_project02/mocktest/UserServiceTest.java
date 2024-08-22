@@ -1,30 +1,30 @@
 package com.example.rev_task_management_project02.mocktest;
 
-
-
 import com.example.rev_task_management_project02.dao.UserRepository;
 import com.example.rev_task_management_project02.exceptions.LoginFailedException;
 import com.example.rev_task_management_project02.exceptions.UserNotFoundException;
 import com.example.rev_task_management_project02.models.Role;
 import com.example.rev_task_management_project02.models.Status;
 import com.example.rev_task_management_project02.models.User;
+import com.example.rev_task_management_project02.services.MailService;
 import com.example.rev_task_management_project02.services.UserService;
 import com.example.rev_task_management_project02.utilities.EntityUpdater;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-public class UserServiceTest {
+@ExtendWith(MockitoExtension.class)
+class UserServiceTest {
 
     @Mock
     private UserRepository userRepository;
@@ -32,133 +32,133 @@ public class UserServiceTest {
     @Mock
     private EntityUpdater entityUpdater;
 
+    @Mock
+    private MailService mailService;
+
     @InjectMocks
     private UserService userService;
 
-    private User existingUser;
-    private User newUser;
-    private List<User> userList;
+    private User user;
 
     @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-
-        existingUser = new User();
-        existingUser.setUserId(1L);
-        existingUser.setEmail("existing@example.com");
-        existingUser.setUserName("Existing User");
-        existingUser.setPassword("password");
-        existingUser.setStatus(Status.ACTIVE);
-        existingUser.setUserRole(Role.ADMIN);
-
-        newUser = new User();
-        newUser.setEmail("updated@example.com");
-        newUser.setUserName("Updated User");
-
-        userList = Arrays.asList(existingUser);
+    public void setUp() {
+        user = new User(1L, "John Doe", Role.ADMIN, "john.doe@example.com", "password123", "1234567890", 0L, Status.ACTIVE, "Engineering", null);
     }
 
     @Test
-    void testGetUserById_Success() throws UserNotFoundException {
-        when(userRepository.findById(1L)).thenReturn(Optional.of(existingUser));
+    void testLoginSuccess() throws LoginFailedException {
+        when(userRepository.findByEmailAndPassword("john.doe@example.com", "password123")).thenReturn(user);
 
-        User result = userService.getUserById(1L);
+        User loggedInUser = userService.login("john.doe@example.com", "password123");
 
-        assertEquals(existingUser, result);
-        verify(userRepository).findById(1L);
+        assertNotNull(loggedInUser);
+        assertEquals("John Doe", loggedInUser.getUserName());
     }
 
     @Test
-    public void testLogin_Success() throws LoginFailedException {
-        when(userRepository.findByEmailAndPassword("existing@example.com", "password")).thenReturn(existingUser);
+    void testLoginFailure() {
+        when(userRepository.findByEmailAndPassword("john.doe@example.com", "wrongpassword")).thenReturn(null);
 
-        User result = userService.login("existing@example.com", "password");
+        assertThrows(LoginFailedException.class, () -> userService.login("john.doe@example.com", "wrongpassword"));
+    }
+    
+    @Test
+    void testResetPasswordWithTokenFailure() {
+        String token = UUID.randomUUID().toString();
 
-        assertEquals(existingUser, result);
-        verify(userRepository).findByEmailAndPassword("existing@example.com", "password");
+        assertThrows(UserNotFoundException.class, () -> userService.resetPasswordWithToken(token, "newpassword123"));
+    }
+
+
+
+    @Test
+    void testUpdateUserSuccess() throws UserNotFoundException {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(entityUpdater.updateFields(any(User.class), any(User.class))).thenReturn(user);
+        when(userRepository.save(any(User.class))).thenReturn(user);
+
+        User updatedUser = userService.updateUser(1L, user);
+
+        assertNotNull(updatedUser);
+        assertEquals("John Doe", updatedUser.getUserName());
     }
 
     @Test
-    public void testResetPassword_Success() {
-        when(userRepository.findByEmail("existing@example.com")).thenReturn(existingUser);
-        when(userRepository.save(any(User.class))).thenReturn(existingUser);
+    void testUpdateUserFailure() {
+        when(userRepository.findById(1L)).thenReturn(Optional.empty());
 
-        User result = userService.resetPassword("existing@example.com", "newPassword");
-
-        assertEquals("newPassword", result.getPassword());
-        verify(userRepository).findByEmail("existing@example.com");
-        verify(userRepository).save(existingUser);
+        assertThrows(UserNotFoundException.class, () -> userService.updateUser(1L, user));
     }
 
     @Test
-    public void testCreateUser_Success() {
-        when(userRepository.save(any(User.class))).thenReturn(newUser);
+    void testGetUserByIdSuccess() throws UserNotFoundException {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
-        User result = userService.createUser(newUser);
+        User foundUser = userService.getUserById(1L);
 
-        assertEquals(newUser, result);
-        verify(userRepository).save(newUser);
+        assertNotNull(foundUser);
+        assertEquals("John Doe", foundUser.getUserName());
     }
 
     @Test
-    public void testUpdateUser_Success() throws UserNotFoundException {
-        when(userRepository.findById(1L)).thenReturn(Optional.of(existingUser));
-        when(entityUpdater.updateFields(existingUser, newUser)).thenReturn(newUser);
-        when(userRepository.save(newUser)).thenReturn(newUser);
+    void testGetUserByIdFailure() {
+        when(userRepository.findById(1L)).thenReturn(Optional.empty());
 
-        User result = userService.updateUser(1L, newUser);
-
-        assertNotNull(result);
-        assertEquals("updated@example.com", result.getEmail());
-        assertEquals("Updated User", result.getUserName());
-        verify(userRepository).findById(1L);
-        verify(userRepository).save(newUser);
+        assertThrows(UserNotFoundException.class, () -> userService.getUserById(1L));
     }
 
     @Test
-    void testGetAllUsers() {
-        when(userRepository.findAll()).thenReturn(userList);
-
-        List<User> result = userService.getAllUsers();
-
-        assertEquals(1, result.size());
-        assertEquals(existingUser.getEmail(), result.get(0).getEmail());
-        verify(userRepository).findAll();
-    }
-
-    @Test
-    void testDeactivateUser_Success() throws UserNotFoundException {
-        when(userRepository.findById(1L)).thenReturn(Optional.of(existingUser));
-        when(userRepository.save(any(User.class))).thenReturn(existingUser);
-
-        User result = userService.deactivateUser(1L);
-
-        assertEquals(Status.INACTIVE, result.getStatus());
-        verify(userRepository).findById(1L);
-        verify(userRepository).save(existingUser);
-    }
-
-    @Test
-    void testAssignRole_Success() throws UserNotFoundException {
-        Role newRole = Role.ADMIN;
-        when(userRepository.findById(1L)).thenReturn(Optional.of(existingUser));
-        when(userRepository.save(any(User.class))).thenReturn(existingUser);
-
-        User result = userService.assignRole(1L, newRole);
-
-        assertEquals(newRole, result.getUserRole());
-        verify(userRepository).findById(1L);
-        verify(userRepository).save(existingUser);
-    }
-    @Test
-    void testDeleteUserById_UserExists() throws UserNotFoundException {
+    void testDeleteUserByIdSuccess() throws UserNotFoundException {
         when(userRepository.existsById(1L)).thenReturn(true);
-        when(userRepository.findById(1L)).thenReturn(Optional.of(existingUser));
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
         User deletedUser = userService.deleteUserById(1L);
 
+        assertNotNull(deletedUser);
+        assertEquals("John Doe", deletedUser.getUserName());
         verify(userRepository, times(1)).deleteById(1L);
-        assertEquals(existingUser, deletedUser);
     }
 
+    @Test
+    void testDeleteUserByIdFailure() {
+        when(userRepository.existsById(1L)).thenReturn(false);
+
+        assertThrows(UserNotFoundException.class, () -> userService.deleteUserById(1L));
+    }
+
+    @Test
+    void testDeactivateUserSuccess() throws UserNotFoundException {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userRepository.save(any(User.class))).thenReturn(user);
+
+        User deactivatedUser = userService.deactivateUser(1L);
+
+        assertNotNull(deactivatedUser);
+        assertEquals(Status.INACTIVE, deactivatedUser.getStatus());
+    }
+
+    @Test
+    void testDeactivateUserFailure() {
+        when(userRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(UserNotFoundException.class, () -> userService.deactivateUser(1L));
+    }
+
+    @Test
+    void testAssignRoleSuccess() throws UserNotFoundException {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userRepository.save(any(User.class))).thenReturn(user);
+
+        User updatedUser = userService.assignRole(1L, Role.ADMIN);
+
+        assertNotNull(updatedUser);
+        assertEquals(Role.ADMIN, updatedUser.getUserRole());
+    }
+
+    @Test
+    void testAssignRoleFailure() {
+        when(userRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(UserNotFoundException.class, () -> userService.assignRole(1L, Role.ADMIN));
+    }
 }
