@@ -2,6 +2,7 @@ package com.example.rev_task_management_project02.controllers;
 
 
 import com.example.rev_task_management_project02.exceptions.ProjectNotFoundException;
+import com.example.rev_task_management_project02.exceptions.UserNotFoundException;
 import com.example.rev_task_management_project02.models.Project;
 import com.example.rev_task_management_project02.services.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ public class ProjectController {
 
 
     @PostMapping
-    public ResponseEntity<Project> createProject(@RequestBody Project project, @RequestParam String teamName) {
+    public ResponseEntity<Project> createProject(@RequestBody Project project, @RequestParam String teamName) throws UserNotFoundException {
         Project createdProject = projectService.createProject(project, teamName);
         return new ResponseEntity<>(createdProject, HttpStatus.CREATED);
     }
