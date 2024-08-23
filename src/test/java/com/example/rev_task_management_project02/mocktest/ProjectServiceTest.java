@@ -4,6 +4,7 @@ package com.example.rev_task_management_project02.mocktest;
 import com.example.rev_task_management_project02.dao.ProjectRepository;
 import com.example.rev_task_management_project02.dao.TeamRepository;
 import com.example.rev_task_management_project02.exceptions.ProjectNotFoundException;
+import com.example.rev_task_management_project02.exceptions.UserNotFoundException;
 import com.example.rev_task_management_project02.models.Project;
 import com.example.rev_task_management_project02.models.Team;
 import com.example.rev_task_management_project02.models.User;
@@ -71,7 +72,7 @@ public class ProjectServiceTest {
     }
 
     @Test
-    void testCreateProject_Success() {
+    void testCreateProject_Success() throws UserNotFoundException {
         String teamName = "Development Team";
         Project savedProject = new Project();
         savedProject.setProjectId(1L);
