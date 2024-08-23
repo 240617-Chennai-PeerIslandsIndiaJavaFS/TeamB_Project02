@@ -27,7 +27,7 @@ public class Team {
     @JoinColumn(name = "manager_id")
     private User manager;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "project_id", nullable = false)
     private Project project;
 
