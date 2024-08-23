@@ -50,6 +50,9 @@ public class TeamService {
             throw new TeamNotFoundException("Team not found with ID " + id);
         }
     }
+    public Team getTeamBtProjectId(Long projectId){
+       return teamRepository.findTeamByProject_ProjectId(projectId);
+    }
 
     public List<Team> getAllTeams() {
         return teamRepository.findAll();

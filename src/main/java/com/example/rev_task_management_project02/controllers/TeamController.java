@@ -2,6 +2,7 @@ package com.example.rev_task_management_project02.controllers;
 
 
 import com.example.rev_task_management_project02.exceptions.TeamNotFoundException;
+import com.example.rev_task_management_project02.models.Task;
 import com.example.rev_task_management_project02.models.Team;
 import com.example.rev_task_management_project02.services.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +58,11 @@ public class TeamController {
         }
     }
 
+    @GetMapping("/project/{projectId}")
+    public ResponseEntity<Team> getTeamsByProjectId(@PathVariable Long projectId) {
+        Team teams = teamService.getTeamBtProjectId(projectId);
+        return ResponseEntity.ok(teams);
+    }
 
     @GetMapping
     public ResponseEntity<List<Team>> getAllTeams() {
