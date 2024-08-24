@@ -109,4 +109,7 @@ public class TaskService {
     public List<Task> getTasksByUserId(Long userId) {
         return taskRepository.findByUserUserId(userId);
     }
+    public void updateUserId(Long taskId, String userId, Long projectId) {
+        taskRepository.updateUserIdByTaskIdAndProjectId(taskId, userId, projectId);
+    }
 }

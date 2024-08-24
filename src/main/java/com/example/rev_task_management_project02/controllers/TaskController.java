@@ -101,4 +101,12 @@ public class TaskController {
         List<Task> tasks = taskService.getTasksByUserId(userId);
         return ResponseEntity.ok(tasks);
     }
+    @PutMapping("/updateUser")
+    public ResponseEntity<String> updateUserId(
+            @RequestParam Long taskId,
+            @RequestParam String userId,
+            @RequestParam Long projectId) {
+        taskService.updateUserId(taskId, userId, projectId);
+        return ResponseEntity.ok("User ID updated successfully");
+    }
 }
