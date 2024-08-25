@@ -38,17 +38,20 @@ public class UserService {
         return user;
     }
 
+
     public void sendPasswordResetToken(String email) throws UserNotFoundException, MessagingException {
         User user = userRepository.findByEmail(email);
         if (user == null) {
             throw new UserNotFoundException("User not found.");
         }
 
-        String token = UUID.randomUUID().toString();
-        tokenStore.put(token, email); // Store token with associated email
+        Random random = new Random();
+        int token = 100000 + random.nextInt(900000);
+
+        tokenStore.put(String.valueOf(token), email);
 
         String subject = "Password Reset Request";
-        String body = String.format("Dear %s,\n\nTo reset your password, please use the following token: %s\n\nBest regards,\nTeam Synergize",
+        String body = String.format("Dear %s,\n\nTo reset your password, please use the following token: %d\n\nBest regards,\nTeam Synergize",
                 user.getUserName(), token);
         mailService.sendEmail(user.getEmail(), subject, body);
     }
@@ -67,11 +70,12 @@ public class UserService {
         user.setPassword(newPassword);
         userRepository.save(user);
 
-        tokenStore.remove(token); // Remove token after use
+        tokenStore.remove(token);
     }
 
 
-public User findByEmail(String email) {
+
+    public User findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 
@@ -79,20 +83,20 @@ public User findByEmail(String email) {
         return oldPassword.equals(user.getPassword());
     }
 
-public User createUser(User user) {
-    User createdUser = userRepository.save(user);
+    public User createUser(User user) {
+        User createdUser = userRepository.save(user);
 
-    try {
-        String subject = "Your New Account Password";
-        String body = String.format("Dear %s,\n\nYour account has been created successfully. Your password is: %s\n\nBest regards,\nTeam Synergize",
-                createdUser.getUserName(), user.getPassword());
-        mailService.sendEmail(user.getEmail(), subject, body);
-    } catch (MessagingException e) {
-        e.printStackTrace();  // Log or handle the exception as needed
+        try {
+            String subject = "Your New Account Password";
+            String body = String.format("Dear %s,\n\nYour account has been created successfully. Your password is: %s\n\nBest regards,\nTeam Synergize",
+                    createdUser.getUserName(), user.getPassword());
+            mailService.sendEmail(user.getEmail(), subject, body);
+        } catch (MessagingException e) {
+            e.printStackTrace();  // Log or handle the exception as needed
+        }
+
+        return createdUser;
     }
-
-    return createdUser;
-}
     public User updateUser(Long userId, User newDetails) throws UserNotFoundException {
         User existingUser = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
